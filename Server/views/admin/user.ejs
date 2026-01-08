@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Users</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Sidebar -->
+  <%- include("sidebar") %>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- Navbar -->
+    <%- include("navbar") %>
+
+    <!-- Page Heading -->
+    <h2 class="page-title">Users Management</h2>
+
+    <!-- Users Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(user => { %>
+            <tr>
+              <td><%= user._id %></td>
+              <td><%= user.name %></td>
+              <td><%= user.email %></td>
+              <td><%= user.role %></td>
+              <td>
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn">Delete</button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

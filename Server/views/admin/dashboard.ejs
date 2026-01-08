@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+
+<div class="container">
+
+  <%- include("sidebar") %>
+
+  <div class="main">
+
+    <%- include("navbar") %>
+
+    <div class="cards">
+      <div class="card">Total Users <span><%= user %></span></div>
+      <div class="card">Total Rooms <span><%= room %></span></div>
+      <div class="card">Confirmed Bookings <span><%= booking %></span></div>
+      <div class="card">Total Payments <span><%= payment %></span></div>
+    </div>
+
+    <div class="grid">
+
+      <div class="box">
+        <h3>Recent Bookings</h3>
+        <table>
+  <% recentBookings.forEach(b => { %>
+    <tr>
+      <td><%= b._id %></td>
+      <td><%= b.room.roomNumber %></td>
+      <td><%= b.user.name %></td>
+      <td class="<%= b.status === 'Approved' ? 'success' : 'pending' %>"><%= b.status %></td>
+    </tr>
+  <% }) %>
+</table>
+      </div>
+
+      <div class="box">
+        <h3>Room Status</h3>
+        <div class="status">
+          <span class="available">Available</span>
+          <span class="occupied">Occupied</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

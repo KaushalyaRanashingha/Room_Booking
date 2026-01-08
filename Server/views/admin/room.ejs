@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Room Management</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+
+<%- include("sidebar") %>
+<div class="main">
+  <%- include("navbar") %>
+
+  <h2 class="page-title">Room Management</h2>
+
+  <!-- Add Room Form -->
+  <div class="form-container">
+    <form action="/api/admin/room/add" method="POST" enctype="multipart/form-data">
+  <input type="text" name="roomNumber" placeholder="Room Number" required>
+  <input type="text" name="type" placeholder="Type" required>
+  <input type="number" name="price" placeholder="Price" required>
+  <input type="file" name="image" required>
+  <button type="submit">Add Room</button>
+</form>
+
+
+  </div>
+
+  <!-- Rooms Table -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Room Number</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% room.forEach(room => { %>
+          <tr>
+            <td><%= room.roomNumber %></td>
+            <td><%= room.type %></td>
+            <td>$<%= room.price %></td>
+            <td>
+              <% if(room.image){ %>
+                <img src="/uploads/<%= room.image %>" width="80">
+              <% } %>
+            </td>
+            <td>
+              <form action="/api/admin/room/update/<%= room._id %>" method="POST" enctype="multipart/form-data" style="display:inline;">
+                <button type="submit" class="edit-btn">Edit</button>
+              </form>
+              <a href="/api/admin/room/delete/<%= room._id %>" class="delete-btn">Delete</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

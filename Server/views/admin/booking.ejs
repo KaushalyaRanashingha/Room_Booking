@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bookings</title>
+</head>
+<body>
+
+<%- include("navbar") %>
+
+<h2>Bookings</h2>
+
+<table border="1">
+  <tr>
+    <th>User</th>
+    <th>Room</th>
+    <th>Status</th>
+  </tr>
+
+  <% booking.forEach(b => { %>
+    <tr>
+      <td><%= b.user?.name %></td>
+      <td><%= b.room?.title %></td>
+      <td><%= b.status %></td>
+    </tr>
+  <% }) %>
+
+</table>
+
+</body>
+</html>

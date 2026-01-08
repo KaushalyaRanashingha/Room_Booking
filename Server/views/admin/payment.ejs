@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payments</title>
+</head>
+<body>
+
+<%- include("navbar") %>
+
+<h2>Payments</h2>
+
+<table border="1">
+  <tr>
+    <th>User</th>
+    <th>Amount</th>
+    <th>Status</th>
+  </tr>
+
+  <% payment.forEach(p => { %>
+    <tr>
+      <td><%= p.user?.name %></td>
+      <td><%= p.amount %></td>
+      <td><%= p.status %></td>
+    </tr>
+  <% }) %>
+
+</table>
+
+</body>
+</html>

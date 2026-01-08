@@ -1,0 +1,25 @@
+<%- include("sidebar") %>
+
+<div class="main">
+  <h2>Contact Messages</h2>
+
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Subject</th>
+      <th>Message</th>
+      <th>Date</th>
+    </tr>
+
+    <% messages.forEach(msg => { %>
+      <tr>
+        <td><%= msg.name %></td>
+        <td><%= msg.email %></td>
+        <td><%= msg.subject %></td>
+        <td><%= msg.message %></td>
+        <td><%= msg.createdAt.toLocaleString() %></td>
+      </tr>
+    <% }) %>
+  </table>
+</div>

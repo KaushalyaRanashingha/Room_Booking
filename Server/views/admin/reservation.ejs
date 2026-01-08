@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reservation</title>
+</head>
+<body>
+
+<%- include("sidebar") %>
+
+<div style="margin-left:240px;padding:20px;">
+  <h2>Reservations</h2>
+
+  <table border="1" width="100%" cellpadding="10">
+    <tr>
+      <th>User</th>
+      <th>Room</th>
+      <th>Check In</th>
+      <th>Check Out</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+
+    <% reservations.forEach(r => { %>
+      <tr>
+        <td><%= r.user?.name %></td>
+        <td><%= r.room?.title %></td>
+        <td><%= r.checkIn %></td>
+        <td><%= r.checkOut %></td>
+        <td><%= r.status %></td>
+        <td>
+          <a href="/api/admin/reservation/approve/<%= r._id %>">Approve</a> |
+          <a href="/api/admin/reservation/reject/<%= r._id %>">Reject</a>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+</div>
+
+</body>
+</html>
