@@ -1,23 +1,22 @@
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 
 function Payment() {
-  const { id } = useParams();
+  const { bookingId } = useParams();
+  const navigate = useNavigate();
 
-  const payNow = async () => {
-    const res = await axios.post(
-      `http://localhost:5000/api/payment/create-checkout-session/${id}`,
-      {},
-      { withCredentials: true }
-    );
+  const handlePayment = async () => {
+    await axios.post("http://localhost:5000/api/payment", {
+      bookingId
+    });
 
-    window.location.href = res.data.url;
+    navigate("/success");
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "80px" }}>
-      <h2>Secure Payment</h2>
-      <button onClick={payNow}>Pay with Card</button>
+    <div>
+      <h2>Payment</h2>
+      <button onClick={handlePayment}>Pay Now</button>
     </div>
   );
 }
