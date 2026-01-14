@@ -16,6 +16,7 @@ const upload = multer({ storage });
 router.get("/login", ctrl.loginPage);
 router.post("/login", ctrl.login);
 router.get("/logout", ctrl.logout);
+router.get("/dashboard", admin, ctrl.dashboard);
 
 router.get("/dashboard", admin, ctrl.dashboard);
 router.get("/user", admin, ctrl.user);

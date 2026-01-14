@@ -3,23 +3,15 @@ const router = express.Router();
 const Booking = require("../models/Booking");
 const sendEmail = require("../utils/sendEmail");
 
-router.post("/", async (req, res) => {
-  const booking = await Booking.findById(req.body.bookingId)
-    .populate("user")
-    .populate("room");
-
-  booking.isPaid = true;
+router.post("/:id", async (req, res) => {
+  const booking = await Booking.findById(req.params.id).populate("room");
+  booking.paid = true;
   await booking.save();
 
   await sendEmail(
-    booking.user.email,
+    booking.email,
     "Booking Confirmed",
-    `
-Room: ${booking.room.name}
-Check-in: ${booking.checkIn}
-Check-out: ${booking.checkOut}
-Total: Rs ${booking.total}
-    `
+    `Your room ${booking.room.roomNumber} is booked successfully.`
   );
 
   res.json({ success: true });

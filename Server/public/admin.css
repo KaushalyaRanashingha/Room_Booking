@@ -1,265 +1,29 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, sans-serif;
-}
-
+/* Optional: tweak base font size slightly up */
 body {
-  background: #f4f6f9;
-  color: #1f2937;
-}
-
-.container {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* SIDEBAR */
-.sidebar {
-  width: 260px;
-  background: linear-gradient(180deg, #020617, #020617);
-  color: #fff;
-  padding: 25px 20px;
-}
-
-.sidebar h2 {
-  font-size: 22px;
-  margin-bottom: 30px;
-  font-weight: 700;
-}
-
-.sidebar ul {
-  list-style: none;
-}
-
-.sidebar ul li {
-  padding: 14px 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  transition: 0.3s;
-}
-
-.sidebar ul li a {
-  color: #e5e7eb;
-  text-decoration: none;
-  display: block;
   font-size: 15px;
 }
 
-.sidebar ul li:hover,
-.sidebar ul li.active {
-  background: #1e293b;
+/* Sidebar layout on desktop */
+.sidebar {
+  min-width: 240px;
+  padding: 16px;
 }
 
-/* MAIN */
-.main {
-  flex: 1;
-  padding: 25px;
-}
-
-/* NAVBAR */
-.navbar {
-  background: #fff;
-  padding: 15px 20px;
-  border-radius: 14px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-}
-
-.navbar input {
-  border: 1px solid #e5e7eb;
-  padding: 8px 12px;
-  border-radius: 8px;
-  width: 220px;
-  outline: none;
-}
-
-.navbar .icons {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* STAT CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 25px;
-}
-
-.card {
-  background: #fff;
-  padding: 22px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  font-weight: 600;
-}
-
-.card span {
-  display: block;
-  font-size: 28px;
-  margin-top: 10px;
-}
-
-.card:nth-child(1) {
-  border-left: 6px solid #2563eb;
-}
-
-.card:nth-child(2) {
-  border-left: 6px solid #0ea5e9;
-}
-
-.card:nth-child(3) {
-  border-left: 6px solid #f97316;
-}
-
-.card:nth-child(4) {
-  border-left: 6px solid #22c55e;
-  background: #ecfdf5;
-}
-
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 25px;
-}
-
-/* BOX */
-.box {
-  background: #fff;
-  padding: 22px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-}
-
-.box h3 {
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-/* TABLE */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-table th {
-  text-align: left;
-  padding: 12px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-table td {
-  padding: 12px;
-  font-size: 14px;
-  border-top: 1px solid #f1f5f9;
-}
-
-/* STATUS LABELS */
-.success {
-  background: #dcfce7;
-  color: #166534;
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.pending {
-  background: #ffedd5;
-  color: #9a3412;
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.cancelled {
-  background: #fee2e2;
-  color: #991b1b;
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* ROOM STATUS */
-.status span {
-  display: inline-block;
-  margin: 6px;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.available {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.occupied {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-
-@media (max-width: 1200px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
+/* On small screens: stack sidebar on top */
+@media (max-width: 960px) {
+  .container {
+    flex-direction: column;
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
   .sidebar {
-    display: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .cards {
-    grid-template-columns: 1fr;
+  .sidebar ul {
+    flex-direction: row;
+    gap: 4px;
   }
-}
-
-.form-container {
-  background-color: #fff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.form-container form input,
-.form-container form textarea,
-.form-container form button {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.form-container form button {
-  background-color: #00b4d8;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-.form-container form button:hover {
-  background-color: #0077a3;
-}
-
-.table-container img {
-  border-radius: 5px;
 }

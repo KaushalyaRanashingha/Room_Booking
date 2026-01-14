@@ -2,53 +2,184 @@
 <html>
 <head>
   <title>Admin Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
   <link rel="stylesheet" href="/admin.css">
 </head>
-<body>
+<body class="bg-light">
+  <div class="d-flex min-vh-100">
+    <%- include("sidebar") %>
 
-<div class="container">
+    <div class="flex-grow-1 d-flex flex-column">
+      <%- include("navbar") %>
 
-  <%- include("sidebar") %>
-
-  <div class="main">
-
-    <%- include("navbar") %>
-
-    <div class="cards">
-      <div class="card">Total Users <span><%= user %></span></div>
-      <div class="card">Total Rooms <span><%= room %></span></div>
-      <div class="card">Confirmed Bookings <span><%= booking %></span></div>
-      <div class="card">Total Payments <span><%= payment %></span></div>
-    </div>
-
-    <div class="grid">
-
-      <div class="box">
-        <h3>Recent Bookings</h3>
-        <table>
-  <% recentBookings.forEach(b => { %>
-    <tr>
-      <td><%= b._id %></td>
-      <td><%= b.room.roomNumber %></td>
-      <td><%= b.user.name %></td>
-      <td class="<%= b.status === 'Approved' ? 'success' : 'pending' %>"><%= b.status %></td>
-    </tr>
-  <% }) %>
-</table>
-      </div>
-
-      <div class="box">
-        <h3>Room Status</h3>
-        <div class="status">
-          <span class="available">Available</span>
-          <span class="occupied">Occupied</span>
+      <main class="container-fluid py-3">
+        <!-- Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-3">
+          <div>
+            <h1 class="h3 mb-1">Dashboard</h1>
+            <p class="text-muted mb-0">
+              Overview of users, rooms, bookings, and payments.
+            </p>
+          </div>
+          <span class="badge bg-light text-muted border">
+            Updated just now
+          </span>
         </div>
-      </div>
 
+        <!-- Stat Cards -->
+        <section class="row g-3 mb-3">
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="h6 text-muted mb-1">Total users</h2>
+                    <p class="h4 mb-0"><%= user %></p>
+                  </div>
+                  <span class="badge bg-primary-subtle text-primary">
+                    Users
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="h6 text-muted mb-1">Total rooms</h2>
+                    <p class="h4 mb-0"><%= room %></p>
+                  </div>
+                  <span class="badge bg-info-subtle text-info">
+                    Rooms
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="h6 text-muted mb-1">Confirmed bookings</h2>
+                    <p class="h4 mb-0"><%= booking %></p>
+                  </div>
+                  <span class="badge bg-success-subtle text-success">
+                    Bookings
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="h6 text-muted mb-1">Total payments</h2>
+                    <p class="h4 mb-0"><%= payment %></p>
+                  </div>
+                  <span class="badge bg-warning-subtle text-warning">
+                    Payments
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bottom grid -->
+        <section class="row g-3">
+          <!-- Recent bookings -->
+          <div class="col-12 col-lg-8">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h2 class="h5 mb-0">Recent bookings</h2>
+                  <small class="text-muted">
+                    Last <%= recentBookings.length %> bookings
+                  </small>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Booking ID</th>
+                        <th>Room</th>
+                        <th>Guest</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if (recentBookings.length === 0) { %>
+                        <tr>
+                          <td colspan="4" class="text-center text-muted py-4">
+                            No recent bookings found.
+                          </td>
+                        </tr>
+                      <% } %>
+
+                      <% recentBookings.forEach(b => { %>
+                        <tr>
+                          <td class="text-truncate" style="max-width: 180px;">
+                            <small><%= b._id %></small>
+                          </td>
+                          <td>#<%= b.room.roomNumber %></td>
+                          <td><%= b.user.name %></td>
+                          <td>
+                            <% if (b.status === 'Approved') { %>
+                              <span class="badge bg-success-subtle text-success">
+                                <%= b.status %>
+                              </span>
+                            <% } else { %>
+                              <span class="badge bg-warning-subtle text-warning">
+                                <%= b.status %>
+                              </span>
+                            <% } %>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Room status -->
+          <div class="col-12 col-lg-4">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <h2 class="h5 mb-3">Room status</h2>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-success-subtle text-success px-3 py-2">
+                    Available
+                  </span>
+                  <span class="badge bg-danger-subtle text-danger px-3 py-2">
+                    Occupied
+                  </span>
+                </div>
+                <p class="text-muted small mt-3 mb-0">
+                  Detailed occupancy and availability will be shown in the room management section.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-
   </div>
-</div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
