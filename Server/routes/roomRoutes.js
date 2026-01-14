@@ -12,6 +12,17 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// GET ALL ROOMS
+router.get("/", async (req, res) => {
+  try {
+    const rooms = await Rooms.find();
+    res.status(200).json(rooms);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch rooms" });
+  }
+});
+
 // ADD ROOM
 router.post("/", upload.single("image"), async (req, res) => {
   try {
