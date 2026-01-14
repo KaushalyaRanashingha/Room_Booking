@@ -2,29 +2,97 @@
 <html>
 <head>
   <title>Payments</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Your small overrides -->
+  <link rel="stylesheet" href="/admin.css">
 </head>
-<body>
+<body class="bg-light">
+  <div class="d-flex min-vh-100">
+    <%- include("sidebar") %>
 
-<%- include("navbar") %>
+    <div class="flex-grow-1 d-flex flex-column">
+      <%- include("navbar") %>
 
-<h2>Payments</h2>
+      <main class="container-fluid py-3">
+        <!-- Page header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-3">
+          <div>
+            <h1 class="h3 mb-1">Payments</h1>
+            <p class="text-muted mb-0">
+              Track payment amounts and statuses for bookings.
+            </p>
+          </div>
+          <span class="badge bg-light text-muted border">
+            Total payments: <%= payments.length %>
+          </span>
+        </div>
 
-<table border="1">
-  <tr>
-    <th>User</th>
-    <th>Amount</th>
-    <th>Status</th>
-  </tr>
+        <!-- Payments table -->
+        <section class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="h5 mb-0">All payments</h2>
+              <small class="text-muted">
+                Showing <%= payments.length %> record(s)
+              </small>
+            </div>
 
-  <% payment.forEach(p => { %>
-    <tr>
-      <td><%= p.user?.name %></td>
-      <td><%= p.amount %></td>
-      <td><%= p.status %></td>
-    </tr>
-  <% }) %>
+            <div class="table-responsive">
+              <table class="table align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (payments.length === 0) { %>
+                    <tr>
+                      <td colspan="3" class="text-center text-muted py-4">
+                        No payments found.
+                      </td>
+                    </tr>
+                  <% } %>
 
-</table>
+                  <% payments.forEach(p => { %>
+                    <tr>
+                      <td><%= p.user?.name || '—' %></td>
+                      <td>LKR <%= p.amount %></td>
+                      <td>
+                        <% if (p.status === 'Paid') { %>
+                          <span class="badge bg-success-subtle text-success">
+                            <%= p.status %>
+                          </span>
+                        <% } else if (p.status === 'Pending') { %>
+                          <span class="badge bg-warning-subtle text-warning">
+                            <%= p.status %>
+                          </span>
+                        <% } else if (p.status === 'Failed') { %>
+                          <span class="badge bg-danger-subtle text-danger">
+                            <%= p.status %>
+                          </span>
+                        <% } else { %>
+                          <span class="badge bg-secondary-subtle text-secondary">
+                            <%= p.status %>
+                          </span>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

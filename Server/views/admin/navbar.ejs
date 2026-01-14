@@ -1,6 +1,33 @@
-<div class="navbar">
-  <input type="text" placeholder="Search..." />
-  <div class="icons">
-    🔔 👤
+<nav class="navbar navbar-expand-md navbar-light bg-white border-bottom shadow-sm px-3">
+  <div class="container-fluid px-0">
+    <button class="navbar-toggler me-2" type="button"
+            data-bs-toggle="collapse" data-bs-target="#adminNavbar"
+            aria-controls="adminNavbar" aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <span class="navbar-brand mb-0 h6">Admin Dashboard</span>
+
+    <div class="collapse navbar-collapse" id="adminNavbar">
+      <div class="ms-md-3 mt-2 mt-md-0 flex-grow-1">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Search rooms, bookings, guests..."
+        />
+      </div>
+
+      <div class="d-flex align-items-center ms-md-3 mt-2 mt-md-0">
+        <span class="me-3 fs-5">🔔</span>
+        <div class="d-flex align-items-center">
+          <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
+               style="width: 32px; height: 32px;">
+            A
+          </div>
+          <span class="fw-medium">Admin</span>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+</nav>
