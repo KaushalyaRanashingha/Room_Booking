@@ -83,12 +83,16 @@
                           >
                             Edit
                           </a>
-                          <button
-                            type="button"
-                            class="btn btn-outline-danger btn-sm ms-1"
+                          <form
+                            action="/api/admin/user/delete/<%= user._id %>"
+                            method="POST"
+                            class="d-inline"
+                            onsubmit="return confirm('Delete this user?');"
                           >
-                            Delete
-                          </button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm ms-1">
+                              Delete
+                            </button>
+                          </form>
                         </td>
                     </tr>
                   <% }) %>

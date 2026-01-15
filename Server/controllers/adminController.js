@@ -64,6 +64,7 @@ exports.user = async (req, res) => {
   }
 };
 
+//edit user details
 exports.userEdit = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).lean();
@@ -97,6 +98,18 @@ exports.updateUser = async (req, res) => {
     res.redirect("/api/admin/user");
   }
 };
+
+//delete user
+exports.deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.redirect("/api/admin/user");
+  } catch (err) {
+    console.error("deleteUser error:", err);
+    res.redirect("/api/admin/user");
+  }
+};
+
 
 // --- ROOMS (ADMIN) ---
 exports.room = async (req, res) => {

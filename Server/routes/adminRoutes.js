@@ -30,6 +30,7 @@ router.get("/dashboard", admin, ctrl.dashboard);
 router.get("/user", admin, ctrl.user);
 router.get("/user/edit/:id", admin, ctrl.userEdit);
 router.post("/user/update/:id", admin, ctrl.updateUser);
+router.post("/user/delete/:id", admin, ctrl.deleteUser);
 
 // ROOMS
 router.get("/room", admin, ctrl.room);
