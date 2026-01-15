@@ -29,28 +29,27 @@ exports.logout = (req, res) => {
 // --- DASHBOARD ---
 exports.dashboard = async (req, res) => {
   try {
-    const users = await User.countDocuments();
-    const rooms = await Room.countDocuments();
-    const bookings = await Booking.countDocuments();
-    const payments = await Payment.countDocuments();
+    const user = await User.countDocuments();
+    const room = await Room.countDocuments();
+    const booking = await Booking.countDocuments({ status: "Approved" });
+    const payment = await Payment.countDocuments();
 
     const recentBookings = await Booking.find()
-      .populate("user")
       .populate("room")
+      .populate("user")
       .sort({ createdAt: -1 })
       .limit(5);
 
-    // Note: Variable names (users, rooms, etc.) must match your dashboard.ejs placeholders
     res.render("admin/dashboard", {
-      users,
-      rooms,
-      bookings,
-      payments,
-      recentBookings,
+      user,
+      room,
+      booking,
+      payment,
+      recentBookings
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server Error");
+    res.status(500).send("Dashboard error");
   }
 };
 
