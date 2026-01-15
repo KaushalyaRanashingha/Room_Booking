@@ -64,6 +64,40 @@ exports.user = async (req, res) => {
   }
 };
 
+exports.userEdit = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).lean();
+    if (!user) {
+      return res.redirect("/api/admin/user");
+    }
+
+    res.render("admin/userEdit", {
+  user,
+  currentPath: "/api/admin/user",
+});
+  } catch (err) {
+    console.error("userEdit page error:", err);
+    res.redirect("/api/admin/user");
+  }
+};
+//update user data in admins
+exports.updateUser = async (req, res) => {
+  try {
+    const { name, email, role } = req.body;
+
+    await User.findByIdAndUpdate(req.params.id, {
+      name,
+      email,
+      role,
+    });
+
+    res.redirect("/api/admin/user");
+  } catch (err) {
+    console.error("updateUser error:", err);
+    res.redirect("/api/admin/user");
+  }
+};
+
 // --- ROOMS (ADMIN) ---
 exports.room = async (req, res) => {
   try {

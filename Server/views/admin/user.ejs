@@ -77,19 +77,19 @@
                         </span>
                       </td>
                       <td class="text-end">
-                        <button
-                          type="button"
-                          class="btn btn-outline-secondary btn-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-outline-danger btn-sm ms-1"
-                        >
-                          Delete
-                        </button>
-                      </td>
+                          <a
+                           href="/api/admin/user/edit/<%= user._id %>"
+                            class="btn btn-outline-secondary btn-sm"
+                          >
+                            Edit
+                          </a>
+                          <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm ms-1"
+                          >
+                            Delete
+                          </button>
+                        </td>
                     </tr>
                   <% }) %>
                 </tbody>

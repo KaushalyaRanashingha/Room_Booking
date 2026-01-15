@@ -1,5 +1,5 @@
 const express = require("express");
-const path = require("path");
+const path = require("node:path");
 const dotenv = require("dotenv");
 const session = require("express-session");
 const cors = require("cors");
@@ -23,6 +23,7 @@ app.use(
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")))
 
 // Session
 app.use(
@@ -38,6 +39,7 @@ app.use(
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+
 /*STATIC FILES*/
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -50,6 +52,7 @@ app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/room", roomRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/admin", adminRoutes);
+
 
 
 /*TEST ROUTE*/
