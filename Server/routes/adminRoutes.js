@@ -4,6 +4,7 @@ const admin = require("../middleware/adminMiddleware");
 const ctrl = require("../controllers/adminController");
 const multer = require("multer");
 const path = require("path");
+const Room = require("../models/Room");
 
 const storage = multer.diskStorage({
   destination: "public/uploads",
@@ -17,13 +18,16 @@ router.get("/login", ctrl.loginPage);
 router.post("/login", ctrl.login);
 router.get("/logout", ctrl.logout);
 
-router.get("/dashboard", admin, ctrl.dashboard);
+router.get("/dashboard", ctrl.dashboard);
+//router.get("/dashboard", admin, ctrl.dashboard);
 router.get("/user", admin, ctrl.user);
 
+//CRUD of Room
 router.get("/room", admin, ctrl.room);
 router.post("/room/add", admin, upload.single("image"), ctrl.addRoom);
 router.post("/room/update/:id", admin, upload.single("image"), ctrl.updateRoom);
 router.post("/room/delete/:id", admin, ctrl.deleteRoom);
+router.get("/room/edit/:id", admin, ctrl.editRoomPage);
 
 router.get("/booking", admin, ctrl.booking);
 router.get("/payment", admin, ctrl.payment);

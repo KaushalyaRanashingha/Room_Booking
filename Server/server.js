@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 const session = require("express-session");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const roomRoutes = require("./routes/roomRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 dotenv.config();
 connectDB();
@@ -42,11 +44,12 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /*ROUTES*/
 app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/room", require("./routes/roomRoutes"));
 app.use("/api/booking", require("./routes/bookingRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
-app.use("/api/admin", require("./routes/adminRoutes"));    
 app.use("/api/contact", require("./routes/contactRoutes"));
+app.use("/api/room", roomRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/api/admin", adminRoutes);
 
 
 /*TEST ROUTE*/

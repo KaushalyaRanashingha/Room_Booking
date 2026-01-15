@@ -15,10 +15,10 @@ const upload = multer({ storage });
 // GET ALL ROOMS
 router.get("/", async (req, res) => {
   try {
-    const rooms = await Rooms.find();
-    res.status(200).json(rooms);
+    const room = await Room.find();
+    res.status(200).json(room);
   } catch (err) {
-    console.error(err);
+    console.error("GET ROOMS ERROR:", err);
     res.status(500).json({ message: "Failed to fetch rooms" });
   }
 });
