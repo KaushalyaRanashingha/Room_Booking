@@ -1,131 +1,179 @@
-
-import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import "../style/Booking.css";
 
 function Booking() {
-  const { roomId } = useParams();
   const navigate = useNavigate();
 
-  const userData = localStorage.getItem("user");
-  const user = userData ? JSON.parse(userData) : null;
+  const [rooms, setRooms] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [unavailableDates, setUnavailableDates] = useState([]);
 
-  const [room, setRoom] = useState(null);
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [days, setDays] = useState(0);
-  const [total, setTotal] = useState(0);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    mobile: "",
+    room: "",
+    checkin: null,
+    checkout: null,
+    totalNights: 0,
+    totalPrice: 0,
+  });
 
-  // 🔐 Protect route
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [user, navigate]);
-
-  // Fetch room details
+  /* ================= FETCH ROOMS ================= */
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/room/${roomId}`)
-      .then((res) => setRoom(res.data))
-      .catch(() => alert("Room not found"));
-  }, [roomId]);
+      .get("http://localhost:5000/api/room")
+      .then(res => setRooms(res.data))
+      .catch(err => console.error(err));
+  }, []);
 
-  // Calculate days & amount
+  /* ================= SELECT ROOM ================= */
   useEffect(() => {
-    if (checkIn && checkOut && room) {
-      const start = new Date(checkIn);
-      const end = new Date(checkOut);
-      const diff = (end - start) / (1000 * 60 * 60 * 24);
+    const room = rooms.find(r => r._id === formData.room);
+    setSelectedRoom(room || null);
+  }, [formData.room, rooms]);
 
-      if (diff > 0) {
-        setDays(diff);
-        setTotal(diff * room.price);
-      } else {
-        setDays(0);
-        setTotal(0);
+  /* ================= FETCH BLOCKED DATES ================= */
+  useEffect(() => {
+    if (!formData.room) return;
+
+    axios
+      .get(`http://localhost:5000/api/booking/unavailable/${formData.room}`)
+      .then(res => {
+        const disabled = [];
+
+        res.data.forEach(b => {
+          let current = new Date(b.checkin);
+          const end = new Date(b.checkout);
+
+          while (current < end) {
+            disabled.push(new Date(current));
+            current.setDate(current.getDate() + 1);
+          }
+        });
+
+        setUnavailableDates(disabled);
+      })
+      .catch(err => console.error(err));
+  }, [formData.room]);
+
+  /* ================= CALCULATE PRICE ================= */
+  useEffect(() => {
+    if (formData.checkin && formData.checkout && selectedRoom) {
+      const nights = Math.ceil(
+        (formData.checkout - formData.checkin) / (1000 * 60 * 60 * 24)
+      );
+
+      if (nights > 0) {
+        setFormData(prev => ({
+          ...prev,
+          totalNights: nights,
+          totalPrice: nights * selectedRoom.price,
+        }));
       }
     }
-  }, [checkIn, checkOut, room]);
+  }, [formData.checkin, formData.checkout, selectedRoom]);
 
-  const handleBooking = async () => {
-    if (!user) return;
+  /* ================= HANDLERS ================= */
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  /* ================= SUBMIT BOOKING ================= */
+  const handleBooking = async (e) => {
+    e.preventDefault();
+
+    if (!formData.room || !formData.checkin || !formData.checkout) {
+      return alert("Please select room and dates");
+    }
 
     try {
       const res = await axios.post("http://localhost:5000/api/booking", {
-        userId: user._id,
-        roomId,
-        checkIn,
-        checkOut,
-        days,
-        amount: total,
+        name: formData.name,
+        email: formData.email,
+        mobile: formData.mobile,
+        room: formData.room,
+        checkin: formData.checkin,
+        checkout: formData.checkout,
+        totalAmount: formData.totalPrice,
       });
 
-      navigate(`/payment/${res.data.bookingId}`);
+      navigate("/payment", {
+        state: {
+          bookingId: res.data._id,
+          totalAmount: formData.totalPrice,
+        },
+      });
+
     } catch (err) {
-      alert("Booking failed");
+      alert(err.response?.data?.message || "Room already booked for selected dates");
     }
   };
-
-  if (!room || !user) {
-    return <p style={{ padding: "40px" }}>Loading...</p>;
-  }
 
   return (
     <>
       <Navbar />
 
-      <div style={{ maxWidth: "600px", margin: "40px auto" }}>
-        <h2>Room Booking</h2>
+      <div className="booking-container">
+        <h2>Book Your Room</h2>
 
-        <img
-          src={`http://localhost:5000${room.image}`}
-          alt="room"
-          style={{ width: "100%", borderRadius: "10px" }}
-        />
+        <div className="booking-content">
+          {/* ================= FORM ================= */}
+          <form className="booking-form" onSubmit={handleBooking}>
+            <input type="text" name="name" placeholder="Name" required onChange={handleChange} />
+            <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
+            <input type="tel" name="mobile" placeholder="Mobile" required onChange={handleChange} />
 
-        <h3>Room {room.roomNumber}</h3>
-        <p>Type: {room.type}</p>
-        <p>Price per night: ${room.price}</p>
+            <select name="room" required onChange={handleChange}>
+              <option value="">-- Select Room --</option>
+              {rooms.map(room => (
+                <option key={room._id} value={room._id}>
+                  {room.type} - LKR {room.price}
+                </option>
+              ))}
+            </select>
 
-        <hr />
+            <label>Check-in</label>
+            <DatePicker
+              selected={formData.checkin}
+              onChange={(date) =>
+                setFormData({ ...formData, checkin: date, checkout: null })
+              }
+              excludeDates={unavailableDates}
+              minDate={new Date()}
+              placeholderText="Select check-in date"
+            />
 
-        <h3>Customer Details</h3>
-        <input value={user.name || ""} disabled />
-        <input value={user.email || ""} disabled />
-        <input value={user.phone || ""} disabled />
+            <label>Check-out</label>
+            <DatePicker
+              selected={formData.checkout}
+              onChange={(date) =>
+                setFormData({ ...formData, checkout: date })
+              }
+              excludeDates={unavailableDates}
+              minDate={formData.checkin}
+              placeholderText="Select check-out date"
+            />
 
-        <h3>Booking Details</h3>
+            <button type="submit">Proceed to Payment</button>
+          </form>
 
-        <label>Check-in Date</label>
-        <input
-          type="date"
-          value={checkIn}
-          onChange={(e) => setCheckIn(e.target.value)}
-        />
-
-        <label>Check-out Date</label>
-        <input
-          type="date"
-          value={checkOut}
-          onChange={(e) => setCheckOut(e.target.value)}
-        />
-
-        {days > 0 && (
-          <>
-            <p>Nights: {days}</p>
-            <h3>Total Amount: ${total}</h3>
-          </>
-        )}
-
-        <button
-          onClick={handleBooking}
-          disabled={!checkIn || !checkOut || days <= 0}
-        >
-          Proceed to Payment
-        </button>
+          {/* ================= SUMMARY ================= */}
+          <div className="booking-summary">
+            <h3>Booking Summary</h3>
+            <p>Room: {selectedRoom?.type || "-"}</p>
+            <p>Price/night: LKR {selectedRoom?.price || "-"}</p>
+            <p>Nights: {formData.totalNights}</p>
+            <strong>Total: LKR {formData.totalPrice}</strong>
+          </div>
+        </div>
       </div>
 
       <Footer />

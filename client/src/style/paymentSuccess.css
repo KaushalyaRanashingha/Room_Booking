@@ -1,0 +1,23 @@
+.payment-success-container {
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.payment-success-container button {
+  padding: 0.7rem 1.5rem;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.payment-success-container button:hover {
+  background: #0056b3;
+}
