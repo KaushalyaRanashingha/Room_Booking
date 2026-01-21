@@ -1,15 +1,27 @@
+// models/Booking.js
 const mongoose = require("mongoose");
 
 const bookingSchema = new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
-  roomId: mongoose.Schema.Types.ObjectId,
   name: String,
   email: String,
-  phone: String,
-  checkIn: Date,
-  checkOut: Date,
-  totalAmount: Number,
-  isPaid: { type: Boolean, default: false }
-});
+  mobile: String,
+  room: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Room",
+    required: true
+  },
+  checkin: {
+    type: Date,
+    required: true
+  },
+  checkout: {
+    type: Date,
+    required: true
+  },
+  status: {
+    type: String,
+    default: "Pending"
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model("Booking", bookingSchema);

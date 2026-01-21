@@ -12,7 +12,9 @@ connectDB();
 
 const app = express();
 
-// CORS
+/* =======================
+   CORS CONFIG
+======================= */
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -20,47 +22,70 @@ app.use(
   })
 );
 
-// Body parser
+/* =======================
+   BODY PARSER
+======================= */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")))
 
-// Session
+/* =======================
+   SESSION CONFIG
+======================= */
 app.use(
   session({
-    secret: "adminsecret",
+    name: "admin-session",
+    secret: process.env.SESSION_SECRET || "adminsecret",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 }, 
+    cookie: {
+      maxAge: 1000 * 60 * 60, // 1 hour
+      httpOnly: true,
+    },
   })
 );
 
-/*VIEW ENGINE*/
+/* =======================
+   VIEW ENGINE
+======================= */
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 
+
 /*STATIC FILES*/
+
+/* =======================
+   STATIC FILES
+======================= */
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-/*ROUTES*/
+/* =======================
+   ROUTES
+======================= */
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/booking", require("./routes/bookingRoutes"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
+
+app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/room", roomRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/admin", adminRoutes);
 
 
-
-/*TEST ROUTE*/
+/* =======================
+   TEST ROUTE
+======================= */
 app.get("/", (req, res) => {
-  res.send("Room Booking Backend Running");
+  res.send(" Room Booking Backend Running");
 });
 
-/*SERVER START*/
+/* =======================
+   SERVER START
+======================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(` Server running on http://localhost:${PORT}`);

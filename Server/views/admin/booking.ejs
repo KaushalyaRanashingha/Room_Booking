@@ -42,50 +42,31 @@
             </div>
 
             <div class="table-responsive">
-              <table class="table align-middle mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>User</th>
-                    <th>Room</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (bookings.length === 0) { %>
-                    <tr>
-                      <td colspan="3" class="text-center text-muted py-4">
-                        No bookings found.
-                      </td>
-                    </tr>
-                  <% } %>
+              <table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Mobile</th>
+    <th>Room Type</th>
+    <th>Price</th>
+    <th>Check-in</th>
+    <th>Check-out</th>
+    <th>Status</th>
+  </tr>
+  <% bookings.forEach(b => { %>
+    <tr>
+      <td><%= b.name %></td>
+      <td><%= b.email %></td>
+      <td><%= b.mobile %></td>
+      <td><%= b.roomType %></td>
+      <td>LKR <%= b.roomPrice %></td>
+      <td><%= b.checkin.toDateString() %></td>
+      <td><%= b.checkout.toDateString() %></td>
+      <td><%= b.status %></td>
+    </tr>
+  <% }) %>
+</table>
 
-                  <% bookings.forEach(b => { %>
-                    <tr>
-                      <td><%= b.user?.name || '—' %></td>
-                      <td><%= b.room?.title || '—' %></td>
-                      <td>
-                        <% if (b.status === 'Approved') { %>
-                          <span class="badge bg-success-subtle text-success">
-                            <%= b.status %>
-                          </span>
-                        <% } else if (b.status === 'Pending') { %>
-                          <span class="badge bg-warning-subtle text-warning">
-                            <%= b.status %>
-                          </span>
-                        <% } else if (b.status === 'Cancelled') { %>
-                          <span class="badge bg-danger-subtle text-danger">
-                            <%= b.status %>
-                          </span>
-                        <% } else { %>
-                          <span class="badge bg-secondary-subtle text-secondary">
-                            <%= b.status %>
-                          </span>
-                        <% } %>
-                      </td>
-                    </tr>
-                  <% }) %>
-                </tbody>
-              </table>
             </div>
           </div>
         </section>

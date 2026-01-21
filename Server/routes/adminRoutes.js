@@ -6,8 +6,11 @@ const admin = require("../middleware/adminMiddleware");
 const ctrl = require("../controllers/adminController");
 const multer = require("multer");
 const path = require("path");
+
 const Room = require("../models/Room");
 const User = require("../models/User");
+
+const Booking = require("../models/Booking");
 
 // Multer storage for room images
 const storage = multer.diskStorage({
@@ -42,8 +45,17 @@ router.post("/room/delete/:id", admin, ctrl.deleteRoom);
 // BOOKINGS / PAYMENTS / RESERVATIONS
 router.get("/booking", admin, ctrl.booking);
 router.get("/payment", admin, ctrl.payment);
+router.post("/payment/approve/:id", AdminController.approvePayment);
 router.get("/reservation", admin, ctrl.reservation);
 router.post("/reservation/approve/:id", admin, ctrl.approveReservation);
 router.post("/reservation/reject/:id", admin, ctrl.rejectReservation);
+
+
+module.exports = router;
+
+exports.booking = async (req, res) => {
+  const bookings = await Booking.find().populate("room");
+  res.render("admin/booking", { bookings });
+};
 
 module.exports = router;

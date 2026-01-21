@@ -1,22 +1,15 @@
 const Room = require("../models/Room");
 
-exports.getRooms = async (req, res) => {
+exports.addRoom = async (req, res) => {
   try {
-    const rooms = await Room.find();
-    res.json(rooms);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+    const { roomNumber, type, price } = req.body;
+    
+    const image = req.file ? req.file.filename : null;
 
-exports.getRoomById = async (req, res) => {
-  try {
-    const room = await Room.findById(req.params.id);
-    if (!room) return res.status(404).json({ message: "Room not found" });
-    res.json(room);
+    await Room.create({ roomNumber, type, price, image });
+    res.redirect("/api/admin/room"); 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).send("Failed to add room");
   }
 };

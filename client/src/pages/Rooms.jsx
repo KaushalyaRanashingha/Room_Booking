@@ -10,7 +10,6 @@ function Rooms() {
   const navigate = useNavigate();
 
   useEffect(() => {
-<<<<<<< HEAD
     const fetchRooms = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/rooms");
@@ -20,11 +19,9 @@ function Rooms() {
       }
     };
     fetchRooms();
-=======
     axios.get("http://localhost:5000/api/room")
       .then((res) => setRooms(res.data))
       .catch((err) => console.error(err));
->>>>>>> 25cea0c (Add room images, update booking, payment, and admin features)
   }, []);
 
   return (

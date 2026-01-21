@@ -1,23 +1,23 @@
-const Booking = require("../models/Booking");
-const Room = require("../models/Room");
-
+// controllers/bookingController.js
 exports.createBooking = async (req, res) => {
-  const room = await Room.findById(req.body.room);
+  const { room, checkin, checkout } = req.body;
 
-  const nights =
-    (new Date(req.body.checkOut) - new Date(req.body.checkIn)) /
-    (1000 * 60 * 60 * 24);
-
-  const roomAmount = nights * room.price;
-  const foodAmount = req.body.food ? nights * 1000 : 0;
-
-  const booking = await Booking.create({
-    ...req.body,
-    nights,
-    roomAmount,
-    foodAmount,
-    totalAmount: roomAmount + foodAmount,
+  const conflict = await Booking.findOne({
+    room,
+    status: { $ne: "Rejected" },
+    $or: [
+      { checkin: { $lt: checkout, $gte: checkin } },
+      { checkout: { $gt: checkin, $lte: checkout } },
+      { checkin: { $lte: checkin }, checkout: { $gte: checkout } },
+    ],
   });
 
+  if (conflict) {
+    return res.status(400).json({
+      message: "Room already booked for selected dates",
+    });
+  }
+
+  const booking = await Booking.create(req.body);
   res.json(booking);
 };

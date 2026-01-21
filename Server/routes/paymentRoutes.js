@@ -1,20 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const Booking = require("../models/Booking");
-const sendEmail = require("../utils/sendEmail");
+const PaymentController = require("../controllers/paymentController");
 
-router.post("/:id", async (req, res) => {
-  const booking = await Booking.findById(req.params.id).populate("room");
-  booking.paid = true;
-  await booking.save();
+// Create payment
+router.post("/", PaymentController.createPayment);
 
-  await sendEmail(
-    booking.email,
-    "Booking Confirmed",
-    `Your room ${booking.room.roomNumber} is booked successfully.`
-  );
+// Get all payments (admin)
+router.get("/", PaymentController.getPayments);
+router.get("/pdf/:id", PaymentController.generatePdf);
 
-  res.json({ success: true });
-});
+
+// Approve payment (admin)
+router.put("/approve/:id", PaymentController.approvePayment);
 
 module.exports = router;

@@ -2,16 +2,20 @@ const User = require("../models/User");
 const Room = require("../models/Room");
 const Booking = require("../models/Booking");
 const Payment = require("../models/Payment");
+const nodemailer = require("nodemailer");
+const PDFDocument = require("pdfkit");
+const path = require("path");
+const fs = require("fs");
 
-// --- ADMIN AUTH ---
+// ---------------- ADMIN AUTH ----------------
 exports.loginPage = (req, res) => {
   res.render("admin/login");
 };
 
-exports.login = async (req, res) => {
+exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  //hardcoded credentials
+  // Hardcoded admin credentials
   if (email === "admin@gmail.com" && password === "123456") {
     req.session.admin = true;
     return res.redirect("/api/admin/dashboard");
@@ -26,7 +30,7 @@ exports.logout = (req, res) => {
   });
 };
 
-// --- DASHBOARD ---
+// ---------------- DASHBOARD ----------------
 exports.dashboard = async (req, res) => {
   try {
     const user = await User.countDocuments();
@@ -53,7 +57,7 @@ exports.dashboard = async (req, res) => {
   }
 };
 
-// --- USERS ---
+// ---------------- USERS ----------------
 exports.user = async (req, res) => {
   try {
     const users = await User.find();
@@ -64,6 +68,7 @@ exports.user = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 //edit user details
 exports.userEdit = async (req, res) => {
   try {
@@ -112,6 +117,9 @@ exports.deleteUser = async (req, res) => {
 
 
 // --- ROOMS (ADMIN) ---
+=======
+// ---------------- ROOMS ----------------
+>>>>>>> 3f2331e (Update server logic, admin UI, and add upload assets)
 exports.room = async (req, res) => {
   try {
     const rooms = await Room.find();
@@ -125,14 +133,13 @@ exports.room = async (req, res) => {
 exports.addRoom = async (req, res) => {
   try {
     const { roomNumber, type, price, status } = req.body;
-    const image = req.file ? req.file.filename : ""; // Store just the filename
 
     await Room.create({
       roomNumber,
       type,
       price,
-      status: status || "Available", // Default to Available if not provided
-      image,
+      status: status || "Available",
+      image: req.file ? req.file.filename : ""
     });
 
     res.redirect("/api/admin/room");
@@ -142,12 +149,10 @@ exports.addRoom = async (req, res) => {
   }
 };
 
-// NEW: This fetches a single room's data to show in an Edit Form
 exports.editRoomPage = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
-    if (!room) return res.status(404).send("Room not found");
-    res.render("admin/editRoom", { room }); 
+    res.render("admin/editRoom", { room });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error loading edit page");
@@ -156,12 +161,14 @@ exports.editRoomPage = async (req, res) => {
 
 exports.updateRoom = async (req, res) => {
   try {
-    const { roomNumber, type, price, status } = req.body;
-    const updateData = { roomNumber, type, price, status };
+    const updateData = {
+      roomNumber: req.body.roomNumber,
+      type: req.body.type,
+      price: req.body.price,
+      status: req.body.status
+    };
 
-    if (req.file) {
-      updateData.image = req.file.filename;
-    }
+    if (req.file) updateData.image = req.file.filename;
 
     await Room.findByIdAndUpdate(req.params.id, updateData);
     res.redirect("/api/admin/room");
@@ -181,30 +188,107 @@ exports.deleteRoom = async (req, res) => {
   }
 };
 
-// --- BOOKINGS & RESERVATIONS ---
+// ---------------- BOOKINGS ----------------
 exports.booking = async (req, res) => {
   try {
-    const bookings = await Booking.find().populate("user room");
+    const bookings = await Booking.find()
+      .populate("room")
+      .populate("user")
+      .sort({ createdAt: -1 });
+
     res.render("admin/booking", { bookings });
   } catch (err) {
+    console.error(err);
     res.status(500).send("Error fetching bookings");
   }
 };
 
+// ---------------- PAYMENTS ----------------
 exports.payment = async (req, res) => {
   try {
-    const payments = await Payment.find().populate("user");
+    const payments = await Payment.find()
+      .populate("booking")
+      .populate("user")
+      .sort({ createdAt: -1 });
+
     res.render("admin/payment", { payments });
   } catch (err) {
+    console.error(err);
     res.status(500).send("Error fetching payments");
   }
 };
 
+// ---------------- APPROVE PAYMENT ----------------
+exports.approvePayment = async (req, res) => {
+  try {
+    const paymentId = req.params.id;
+    const payment = await Payment.findById(paymentId).populate("booking");
+
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    if (payment.status === "Paid")
+      return res.status(400).json({ error: "Payment already approved" });
+
+    payment.status = "Paid";
+    await payment.save();
+
+    // ---------------- GENERATE PDF ----------------
+    const doc = new PDFDocument();
+    const fileName = `Booking_${payment.booking._id}.pdf`;
+    const filePath = path.join(__dirname, "..", "public", fileName);
+
+    doc.pipe(fs.createWriteStream(filePath));
+
+    doc.fontSize(20).text("Booking & Payment Details", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(14).text(`Customer Name: ${payment.booking.name}`);
+    doc.text(`Email: ${payment.booking.email}`);
+    doc.text(`Mobile: ${payment.booking.mobile}`);
+    doc.text(`Room: ${payment.booking.roomType}`);
+    doc.text(`Check-in: ${payment.booking.checkin.toDateString()}`);
+    doc.text(`Check-out: ${payment.booking.checkout.toDateString()}`);
+    doc.text(`Total Nights: ${payment.booking.totalNights}`);
+    doc.text(`Total Amount Paid: LKR ${payment.amount}`);
+    doc.text(`Payment Status: ${payment.status}`);
+    doc.end();
+
+    // ---------------- SEND EMAIL ----------------
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: payment.booking.email,
+      subject: "Payment Approved - Booking Details",
+      text: `Your payment has been approved. Download your booking PDF here: http://localhost:5000/${fileName}`,
+      html: `<p>Your payment has been approved.</p>
+             <p><a href="http://localhost:5000/${fileName}" target="_blank">Download PDF</a></p>`
+    });
+
+    // Response for AJAX call
+    res.json({ message: "Payment approved and email sent" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Payment approval failed" });
+  }
+};
+
+// ---------------- RESERVATIONS ----------------
 exports.reservation = async (req, res) => {
   try {
-    const reservations = await Booking.find().populate("user room");
+    const reservations = await Booking.find()
+      .populate("room")
+      .populate("user")
+      .sort({ createdAt: -1 });
+
     res.render("admin/reservation", { reservations });
   } catch (err) {
+    console.error(err);
     res.status(500).send("Error fetching reservations");
   }
 };
@@ -214,6 +298,7 @@ exports.approveReservation = async (req, res) => {
     await Booking.findByIdAndUpdate(req.params.id, { status: "Approved" });
     res.redirect("/api/admin/reservation");
   } catch (err) {
+    console.error(err);
     res.status(500).send("Approval failed");
   }
 };
@@ -223,6 +308,7 @@ exports.rejectReservation = async (req, res) => {
     await Booking.findByIdAndUpdate(req.params.id, { status: "Rejected" });
     res.redirect("/api/admin/reservation");
   } catch (err) {
+    console.error(err);
     res.status(500).send("Rejection failed");
   }
 };

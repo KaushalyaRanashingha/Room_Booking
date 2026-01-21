@@ -1,35 +1,19 @@
 const mongoose = require("mongoose");
 
-const paymentSchema = new mongoose.Schema(
-  {
-    booking: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-      required: true,
-    },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    amount: {
-      type: Number,
-      required: true,
-    },
-    paymentMethod: {
-      type: String,
-      enum: ["stripe", "paypal"],
-      default: "stripe",
-    },
-    status: {
-      type: String,
-      default: "paid",
-    },
-    transactionId: {
-      type: String,
-    },
+const PaymentSchema = new mongoose.Schema({
+  booking: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Booking",
+    required: true, // Make sure frontend sends booking ID
   },
-  { timestamps: true }
-);
+  nameOnCard: { type: String, required: true },
+  cardNumber: { type: String, required: true },
+  expiryDate: { type: String, required: true },
+  securityCode: { type: String, required: true },
+  amount: { type: Number, required: true },
+  status: { type: String, default: "Pending" }, // Admin approval
+  createdAt: { type: Date, default: Date.now },
+});
 
-module.exports = mongoose.model("Payment", paymentSchema);
+// Explicitly set collection name
+module.exports = mongoose.model("Payment", PaymentSchema, "payments");
