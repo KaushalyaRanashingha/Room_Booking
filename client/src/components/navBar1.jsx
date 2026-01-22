@@ -17,7 +17,7 @@ function Navbar() {
         <li><Link to="/">Home</Link></li>
         <li><Link to="/about">About</Link></li>
         <li><Link to="/rooms">Rooms</Link></li>
-        <li><Link to="/contact">Contact</Link></li>
+        <li><Link to="/contact">Review</Link></li>
 
         {/* Profile Icon */}
         <li className="profile-icon">

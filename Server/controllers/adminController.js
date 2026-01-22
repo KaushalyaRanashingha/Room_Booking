@@ -235,3 +235,13 @@ exports.approvePayment = async (req, res) => {
     res.status(500).json({ error: "Payment approval failed" });
   }
 };
+
+exports.reservation = async (req, res) => {
+  try {
+    const reservations = await Booking.find().populate("room").sort({ createdAt: -1 });
+    res.render("admin/reservation", { reservations });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading reservations");
+  }
+};

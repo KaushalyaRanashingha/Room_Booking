@@ -71,7 +71,7 @@ function Contact() {
 
         {/* RIGHT: Contact Form */}
         <div className="contact-form">
-          <h2>Send a Message</h2>
+          <h2>Review Us</h2>
           <form onSubmit={handleSubmit}>
             <input
               type="text"
