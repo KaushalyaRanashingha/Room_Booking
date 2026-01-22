@@ -22,4 +22,5 @@ router.get("/booking/reject/:id", AdminController.rejectReservation);
 router.get("/payment", AdminController.payment);
 router.post("/payment/approve/:id", AdminController.approvePayment);
 
+
 module.exports = router;

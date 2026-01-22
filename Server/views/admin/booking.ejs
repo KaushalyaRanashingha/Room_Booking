@@ -42,31 +42,66 @@
             </div>
 
             <div class="table-responsive">
-              <table>
-  <tr>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Mobile</th>
-    <th>Room Type</th>
-    <th>Price</th>
-    <th>Check-in</th>
-    <th>Check-out</th>
-    <th>Status</th>
-  </tr>
-  <% bookings.forEach(b => { %>
-    <tr>
-      <td><%= b.name %></td>
-      <td><%= b.email %></td>
-      <td><%= b.mobile %></td>
-      <td><%= b.roomType %></td>
-      <td>LKR <%= b.roomPrice %></td>
-      <td><%= b.checkin.toDateString() %></td>
-      <td><%= b.checkout.toDateString() %></td>
-      <td><%= b.status %></td>
-    </tr>
-  <% }) %>
-</table>
+              <table class="table table-hover align-middle border shadow-sm">
+                <thead class="table-light">
+                  <tr>
+                    <th>Guest info</th>
+                    <th>Room Details</th>
+                    <th>Stay Dates</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (bookings.length === 0) { %>
+                    <tr><td colspan="5" class="text-center py-4 text-muted">No bookings found.</td></tr>
+                  <% } %>
 
+                  <% bookings.forEach(b => { %>
+                    <tr>
+                      <td>
+                        <div class="fw-bold"><%= b.name %></div>
+                        <div class="small text-muted"><%= b.email %></div>
+                        <div class="small text-muted"><%= b.mobile %></div>
+                      </td>
+
+                      <td>
+                        <div class="badge bg-light text-dark border mb-1">
+                          <%= b.room?.roomNumber ? 'Room ' + b.room.roomNumber : 'Room N/A' %>
+                        </div>
+                        <div class="small text-muted"><%= b.room?.type %></div>
+                        <div class="small fw-bold">LKR <%= b.room?.price %></div>
+                      </td>
+
+                      <td class="small">
+                        <div class="text-success"><strong>In:</strong> <%= b.checkin.toDateString() %></div>
+                        <div class="text-danger"><strong>Out:</strong> <%= b.checkout.toDateString() %></div>
+                      </td>
+
+                      <td>
+                        <span class="badge rounded-pill bg-<%= b.status === 'Approved' ? 'success' : (b.status === 'Rejected' ? 'danger' : 'warning') %>">
+                          <%= b.status %>
+                        </span>
+                      </td>
+
+                      <td class="text-end">
+                        <% if (b.status === 'Pending') { %>
+                          <div class="btn-group">
+                            <a href="/api/admin/booking/approve/<%= b._id %>" class="btn btn-sm btn-success">
+                              Approve
+                            </a>
+                            <a href="/api/admin/booking/reject/<%= b._id %>" class="btn btn-sm btn-outline-danger ms-1">
+                              Reject
+                            </a>
+                          </div>
+                        <% } else { %>
+                          <span class="text-muted small italic">Processed</span>
+                        <% } %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
