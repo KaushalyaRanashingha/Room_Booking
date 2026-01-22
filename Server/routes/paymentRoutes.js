@@ -2,15 +2,13 @@ const express = require("express");
 const router = express.Router();
 const PaymentController = require("../controllers/paymentController");
 
-// Create payment
+// Create a new payment (POST)
 router.post("/", PaymentController.createPayment);
 
-// Get all payments (admin)
-router.get("/", PaymentController.getPayments);
-router.get("/pdf/:id", PaymentController.generatePdf);
+// Get all payments (for admin dashboard)
+router.get("/", PaymentController.getAllPayments);
 
-
-// Approve payment (admin)
-router.put("/approve/:id", PaymentController.approvePayment);
+// Get single payment by id (optional)
+router.get("/:id", PaymentController.getPaymentById);
 
 module.exports = router;

@@ -3,8 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navBar1";
 import Footer from "../components/Footer";
 import "../style/Booking.css";
 
@@ -26,7 +25,7 @@ function Booking() {
     totalPrice: 0,
   });
 
-  /* ================= FETCH ROOMS ================= */
+  /* FETCH ROOMS */
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/room")
@@ -34,13 +33,13 @@ function Booking() {
       .catch(err => console.error(err));
   }, []);
 
-  /* ================= SELECT ROOM ================= */
+  /*SELECT ROOM */
   useEffect(() => {
     const room = rooms.find(r => r._id === formData.room);
     setSelectedRoom(room || null);
   }, [formData.room, rooms]);
 
-  /* ================= FETCH BLOCKED DATES ================= */
+  /* FETCH BLOCKED DATES  */
   useEffect(() => {
     if (!formData.room) return;
 
@@ -48,7 +47,6 @@ function Booking() {
       .get(`http://localhost:5000/api/booking/unavailable/${formData.room}`)
       .then(res => {
         const disabled = [];
-
         res.data.forEach(b => {
           let current = new Date(b.checkin);
           const end = new Date(b.checkout);
@@ -64,7 +62,7 @@ function Booking() {
       .catch(err => console.error(err));
   }, [formData.room]);
 
-  /* ================= CALCULATE PRICE ================= */
+  /* CALCULATE PRICE */
   useEffect(() => {
     if (formData.checkin && formData.checkout && selectedRoom) {
       const nights = Math.ceil(
@@ -81,12 +79,12 @@ function Booking() {
     }
   }, [formData.checkin, formData.checkout, selectedRoom]);
 
-  /* ================= HANDLERS ================= */
+  /* HANDLERS */
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  /* ================= SUBMIT BOOKING ================= */
+  /* SUBMIT BOOKING */
   const handleBooking = async (e) => {
     e.preventDefault();
 
@@ -125,11 +123,29 @@ function Booking() {
         <h2>Book Your Room</h2>
 
         <div className="booking-content">
-          {/* ================= FORM ================= */}
+          {/* FORM*/}
           <form className="booking-form" onSubmit={handleBooking}>
-            <input type="text" name="name" placeholder="Name" required onChange={handleChange} />
-            <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
-            <input type="tel" name="mobile" placeholder="Mobile" required onChange={handleChange} />
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              required
+              onChange={handleChange}
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              required
+              onChange={handleChange}
+            />
+            <input
+              type="tel"
+              name="mobile"
+              placeholder="Mobile"
+              required
+              onChange={handleChange}
+            />
 
             <select name="room" required onChange={handleChange}>
               <option value="">-- Select Room --</option>
@@ -162,15 +178,17 @@ function Booking() {
               placeholderText="Select check-out date"
             />
 
-            <button type="submit">Proceed to Payment</button>
+            <button type="submit" className="submit-btn">Proceed to Payment</button>
           </form>
 
-          {/* ================= SUMMARY ================= */}
+          {/* SUMMARY */}
           <div className="booking-summary">
             <h3>Booking Summary</h3>
-            <p>Room: {selectedRoom?.type || "-"}</p>
-            <p>Price/night: LKR {selectedRoom?.price || "-"}</p>
-            <p>Nights: {formData.totalNights}</p>
+            <p><span>Room:</span> <span>{selectedRoom?.type || "-"}</span></p>
+            <p><span>Price/night:</span> <span>LKR {selectedRoom?.price || "-"}</span></p>
+            <p><span>Check-in:</span> <span>{formData.checkin ? formData.checkin.toLocaleDateString() : "-"}</span></p>
+            <p><span>Check-out:</span> <span>{formData.checkout ? formData.checkout.toLocaleDateString() : "-"}</span></p>
+            <p><span>Nights:</span> <span>{formData.totalNights}</span></p>
             <strong>Total: LKR {formData.totalPrice}</strong>
           </div>
         </div>

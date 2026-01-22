@@ -1,37 +1,117 @@
+/*GLOBAL */
 html, body {
   font-size: 15px;
   overflow-x: hidden;
+  background: #f9fafb;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  color: #111827;
 }
 
-/* Sidebar layout on desktop */
+/*SIDEBAR */
 .sidebar {
-  width: 260px; 
-  flex-shrink: 0; 
+  width: 240px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
   padding: 16px;
   height: 100vh;
   position: sticky;
   top: 0;
 }
 
-.flex-grow-1 {
-  min-width: 0; 
+/* Sidebar menu */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* On small screens: stack sidebar on top */
-@media (max-width: 960px) {
-  .container {
-    flex-direction: column;
-  }
+.sidebar li {
+  margin-bottom: 6px;
+}
 
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  color: #374151;
+  transition: background 0.2s ease;
+}
+
+.sidebar a:hover {
+  background: #f3f4f6;
+}
+
+.sidebar a.active {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Logout */
+.sidebar .logout {
+  color: #dc2626;
+}
+
+.sidebar .logout:hover {
+  background: #fee2e2;
+}
+
+/*MAIN CONTENT */
+.flex-grow-1 {
+  min-width: 0;
+}
+
+/* Page padding */
+main {
+  padding: 24px;
+}
+
+/*NAVBAR */
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/*CARDS */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/*TABLE */
+table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+table td {
+  font-size: 0.9rem;
+}
+
+/*BADGES */
+.badge {
+  font-size: 0.75rem;
+  padding: 5px 8px;
+  border-radius: 6px;
+}
+
+/*RESPONSIVE */
+@media (max-width: 960px) {
   .sidebar {
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
   }
 
   .sidebar ul {
-    flex-direction: row;
-    gap: 4px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
   }
 }

@@ -1,37 +1,48 @@
-import { useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Navbar from "../components/navBar1";
 import Footer from "../components/Footer";
-import { useState } from "react";
 import axios from "axios";
-import "../style/paymentSuccess.css";
 
 function PaymentSuccess() {
   const location = useLocation();
-  const { bookingId, paymentId } = location.state || {};
-  const [pdfUrl, setPdfUrl] = useState("");
+  const navigate = useNavigate();
+  const { bookingId } = location.state || {};
 
-  const handleDownloadPdf = async () => {
-    try {
-      const res = await axios.get(`http://localhost:5000/api/payment/pdf/${paymentId}`);
-      setPdfUrl(res.data.url);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to generate PDF");
-    }
-  };
+  const [payment, setPayment] = useState(null);
+
+  useEffect(() => {
+    if (!bookingId) return;
+    const fetchPayment = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/payment");
+        const paymentData = res.data.find(p => p.booking._id === bookingId && p.status === "Paid");
+        setPayment(paymentData);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPayment();
+  }, [bookingId]);
+
+  if (!payment) return <p>Waiting for admin approval...</p>;
 
   return (
     <>
       <Navbar />
       <div className="payment-success-container">
-        <h2>Thank You!</h2>
-        <p>Your payment has been submitted successfully.</p>
-        <button onClick={handleDownloadPdf}>Download PDF</button>
-        {pdfUrl && (
-          <p>
-            <a href={pdfUrl} target="_blank" rel="noopener noreferrer">Click here to view PDF</a>
-          </p>
-        )}
+        <h2>Payment Successful!</h2>
+        <div className="payment-summary">
+          <p>Booking ID: {payment.booking._id}</p>
+          <p>Room: {payment.booking.roomType}</p>
+          <p>Check-in: {new Date(payment.booking.checkin).toDateString()}</p>
+          <p>Check-out: {new Date(payment.booking.checkout).toDateString()}</p>
+          <p>Total Nights: {payment.booking.totalNights}</p>
+          <p>Amount Paid: LKR {payment.amount}</p>
+          <button onClick={() => navigate("/review", { state: { bookingId } })}>
+            Write a Review
+          </button>
+        </div>
       </div>
       <Footer />
     </>

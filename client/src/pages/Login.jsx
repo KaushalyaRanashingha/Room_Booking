@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navBar1";
 import Footer from "../components/Footer";
 import "../style/Login.css";
 
@@ -22,7 +22,7 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       alert("Login Successful");
 
-      navigate("/"); 
+      navigate("/Home"); 
 
     } catch (err) {
       alert("Invalid email or password");

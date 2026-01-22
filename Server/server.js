@@ -62,6 +62,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+
 /* =======================
    ROUTES
 ======================= */
@@ -74,6 +75,10 @@ app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/room", roomRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/admin", adminRoutes);
+
+const paymentRoutes = require("./routes/paymentRoutes");
+app.use("/api/payment", paymentRoutes);
+
 
 
 /* =======================
