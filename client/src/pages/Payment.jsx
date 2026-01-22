@@ -35,7 +35,7 @@ function Payment() {
     try {
       await axios.post("http://localhost:5000/api/payment", formData);
       alert("Payment submitted! Await admin approval.");
-      navigate("/payment-success");
+      navigate("/payment-success", { state: { bookingId: formData.bookingId } });
     } catch (err) {
       console.error(err);
       alert("Payment submission failed!");
