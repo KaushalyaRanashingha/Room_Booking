@@ -17,27 +17,23 @@
       <%- include("navbar") %>
 
       <main class="container-fluid py-3">
-        <!-- Page header -->
+        <!-- Page Header -->
         <div class="d-flex flex-wrap justify-content-between align-items-end mb-3">
           <div>
             <h1 class="h3 mb-1">Payments</h1>
-            <p class="text-muted mb-0">
-              Track payment amounts and statuses for bookings.
-            </p>
+            <p class="text-muted mb-0">Track payment amounts and statuses for bookings.</p>
           </div>
           <span class="badge bg-light text-muted border">
             Total payments: <%= payments.length %>
           </span>
         </div>
 
-        <!-- Payments table -->
+        <!-- Payments Table -->
         <section class="card shadow-sm">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <h2 class="h5 mb-0">All payments</h2>
-              <small class="text-muted">
-                Showing <%= payments.length %> record(s)
-              </small>
+              <h2 class="h5 mb-0">All Payments</h2>
+              <small class="text-muted">Showing <%= payments.length %> record(s)</small>
             </div>
 
             <div class="table-responsive">
@@ -47,13 +43,12 @@
                     <th>User</th>
                     <th>Amount</th>
                     <th>Status</th>
-                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% if (payments.length === 0) { %>
                     <tr>
-                      <td colspan="4" class="text-center text-muted py-4">
+                      <td colspan="3" class="text-center text-muted py-4">
                         No payments found.
                       </td>
                     </tr>
@@ -67,18 +62,14 @@
                         <% if (p.status === 'Paid') { %>
                           <span class="badge bg-success-subtle text-success">Paid</span>
                         <% } else if (p.status === 'Pending') { %>
-                          <span class="badge bg-warning-subtle text-warning"><%= p.status %></span>
-                        <% } else if (p.status === 'Failed') { %>
-                          <span class="badge bg-danger-subtle text-danger">Failed</span>
-                        <% } %>
-                      </td>
-                      <td>
-                        <% if (p.status === 'Pending') { %>
                           <button class="btn btn-sm btn-success approve-btn" data-id="<%= p._id %>">
                             Approve
                           </button>
+                          <span class="badge bg-warning-subtle text-warning"><%= p.status %></span>
+                        <% } else if (p.status === 'Failed') { %>
+                          <span class="badge bg-danger-subtle text-danger">Failed</span>
                         <% } else { %>
-                          <span class="text-muted">—</span>
+                          <span class="badge bg-secondary-subtle text-secondary"><%= p.status %></span>
                         <% } %>
                       </td>
                     </tr>
@@ -92,9 +83,11 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Axios -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <script>
     document.querySelectorAll(".approve-btn").forEach(button => {
       button.addEventListener("click", async () => {
@@ -103,22 +96,27 @@
         if (!confirm("Are you sure you want to approve this payment?")) return;
 
         try {
-          // Call the backend API
-          const res = await axios.put(`/api/admin/payment/approve/${paymentId}`);
-          
+          // Make POST request to approve payment
+          const res = await axios.post(
+            `/api/admin/payment/approve/${paymentId}`,
+            {}, // POST body empty
+            { withCredentials: true } // if using session auth
+          );
+
           if (res.status === 200) {
             alert("Payment approved! Email sent to customer.");
 
-            // Update status badge and button
-            const row = button.closest("tr");
-            row.querySelector("td:nth-child(3) .badge").className = "badge bg-success-subtle text-success";
-            row.querySelector("td:nth-child(3) .badge").innerText = "Paid";
+            // Update button and badge
             button.disabled = true;
             button.innerText = "Approved";
+
+            const badge = button.nextElementSibling;
+            badge.className = "badge bg-success-subtle text-success";
+            badge.innerText = "Paid";
           }
         } catch (err) {
           console.error(err);
-          alert(err.response?.data?.error || "Failed to approve payment.");
+          alert("Failed to approve payment.");
         }
       });
     });
