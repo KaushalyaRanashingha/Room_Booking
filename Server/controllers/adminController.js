@@ -32,10 +32,11 @@ exports.logout = (req, res) => {
 ========================= */
 exports.dashboard = async (req, res) => {
   try {
-    const user = await User.countDocuments();
-    const room = await Room.countDocuments();
-    const booking = await Booking.countDocuments({ status: "Approved" });
-    const payment = await Payment.countDocuments();
+    // Variable names updated to plural to match your views
+    const users = await User.countDocuments();
+    const rooms = await Room.countDocuments();
+    const bookings = await Booking.countDocuments({ status: "Approved" });
+    const payments = await Payment.countDocuments();
 
     const recentBookings = await Booking.find()
       .populate("room")
@@ -43,10 +44,10 @@ exports.dashboard = async (req, res) => {
       .limit(5);
 
     res.render("admin/dashboard", {
-      user,
-      room,
-      booking,
-      payment,
+      users,
+      rooms,
+      bookings,
+      payments,
       recentBookings,
     });
   } catch (err) {
@@ -83,11 +84,24 @@ exports.deleteUser = async (req, res) => {
 ========================= */
 exports.room = async (req, res) => {
   try {
+    // Variable name matches view expectations
     const rooms = await Room.find();
     res.render("admin/room", { rooms });
   } catch (err) {
     console.error(err);
     res.status(500).send("Failed to fetch rooms");
+  }
+};
+
+// ADDED: This function allows you to view the Edit Room page
+exports.editRoomPage = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    if (!room) return res.status(404).send("Room not found");
+    res.render("admin/editRoom", { room });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading edit page");
   }
 };
 
@@ -107,6 +121,24 @@ exports.addRoom = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Failed to add room");
+  }
+};
+
+// ADDED: Logic to handle room data updates
+exports.updateRoom = async (req, res) => {
+  try {
+    const { roomNumber, type, price, status } = req.body;
+    const updateData = { roomNumber, type, price, status };
+
+    if (req.file) {
+      updateData.image = req.file.filename;
+    }
+
+    await Room.findByIdAndUpdate(req.params.id, updateData);
+    res.redirect("/api/admin/room");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Update failed");
   }
 };
 
@@ -136,6 +168,7 @@ exports.booking = async (req, res) => {
   }
 };
 
+// Logic for Staff/Admin to approve reservations
 exports.approveReservation = async (req, res) => {
   try {
     await Booking.findByIdAndUpdate(req.params.id, {
@@ -165,20 +198,23 @@ exports.rejectReservation = async (req, res) => {
 ========================= */
 exports.payment = async (req, res) => {
   try {
+    // Only populate 'booking' and the 'room' inside that booking
     const payments = await Payment.find()
-      .populate("user")
-      .populate("booking")
+      .populate({
+        path: 'booking',
+        populate: { path: 'room' } 
+      })
       .sort({ createdAt: -1 });
 
     res.render("admin/payment", { payments });
   } catch (err) {
-    console.error(err);
+    console.error("Payment Fetch Error:", err);
     res.status(500).send("Failed to fetch payments");
   }
 };
 
 /* =========================
-   APPROVE PAYMENT (NO PDF / NO EMAIL)
+   APPROVE PAYMENT 
 ========================= */
 exports.approvePayment = async (req, res) => {
   try {

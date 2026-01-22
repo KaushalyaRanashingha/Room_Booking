@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Payments</title>
-
-  <!-- Bootstrap -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
+  <meta charset="UTF-8">
+  <title>Payments | Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/admin.css">
 </head>
 
@@ -21,44 +17,50 @@
 
     <main class="container-fluid py-3">
 
-      <!-- Header -->
       <div class="d-flex justify-content-between align-items-end mb-3">
         <div>
           <h1 class="h3 mb-1">Payments</h1>
-          <p class="text-muted mb-0">Manage customer payments</p>
+          <p class="text-muted mb-0">Manage and monitor customer transactions</p>
         </div>
-        <span class="badge bg-light text-muted border">
-          Total: <%= payments.length %>
+        <span class="badge bg-light text-dark border">
+          Total Transactions: <%= payments.length %>
         </span>
       </div>
 
-      <!-- Table -->
       <div class="card shadow-sm">
         <div class="card-body">
 
           <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table table-hover align-middle">
               <thead class="table-light">
                 <tr>
-                  <th>User</th>
+                  <th>Guest Name</th>
+                  <th>Booking ID</th>
                   <th>Amount</th>
                   <th>Status</th>
-                  <th>Action</th>
+                  <th class="text-end">Action</th>
                 </tr>
               </thead>
 
               <tbody>
               <% if (payments.length === 0) { %>
                 <tr>
-                  <td colspan="4" class="text-center text-muted py-4">
-                    No payments found
+                  <td colspan="5" class="text-center text-muted py-4">
+                    No payment records found.
                   </td>
                 </tr>
               <% } %>
 
               <% payments.forEach(p => { %>
                 <tr>
-                  <td><%= p.user?.name || "—" %></td>
+                  <td class="fw-bold">
+                    <%= p.booking ? p.booking.name : "N/A" %>
+                  </td>
+                  
+                  <td class="small text-muted">
+                    #<%= p.booking ? p.booking._id : 'N/A' %>
+                  </td>
+
                   <td>LKR <%= p.amount %></td>
 
                   <td>
@@ -71,15 +73,15 @@
                     <% } %>
                   </td>
 
-                  <td>
+                  <td class="text-end">
                     <% if (p.status === "Pending") { %>
                       <button
                         class="btn btn-sm btn-success approve-btn"
                         data-id="<%= p._id %>">
-                        Approve
+                        Approve Payment
                       </button>
                     <% } else { %>
-                      —
+                      <span class="text-muted small">Confirmed</span>
                     <% } %>
                   </td>
                 </tr>
@@ -95,7 +97,6 @@
   </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
@@ -104,20 +105,18 @@ document.querySelectorAll(".approve-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
     const paymentId = btn.dataset.id;
 
-    if (!confirm("Approve this payment?")) return;
+    if (!confirm("Are you sure you want to approve this payment?")) return;
 
     try {
-      const res = await axios.post(
-        `/api/admin/payment/approve/${paymentId}`
-      );
+      const res = await axios.post(`/api/admin/payment/approve/${paymentId}`);
 
-      alert(res.data.message || "Payment approved");
+      alert(res.data.message || "Payment approved successfully");
 
-      // UI update
-      btn.closest("tr").querySelector("td:nth-child(3)").innerHTML =
-        '<span class="badge bg-success">Paid</span>';
-
-      btn.remove();
+      const row = btn.closest("tr");
+      row.querySelector("td:nth-child(4)").innerHTML = '<span class="badge bg-success">Paid</span>';
+      
+      // Update Action cell to remove button
+      row.querySelector("td:nth-child(5)").innerHTML = '<span class="text-muted small">Confirmed</span>';
 
     } catch (err) {
       console.error(err);

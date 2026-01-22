@@ -23,10 +23,16 @@ exports.createPayment = async (req, res) => {
   }
 };
 
-// Get all payments
+// Get all payments for the Admin
 exports.getPayments = async (req, res) => {
   try {
-    const payments = await Payment.find().populate("booking").populate("user");
+    const payments = await Payment.find()
+      .populate({
+        path: 'booking',
+        populate: { path: 'user' } 
+      })
+      .sort({ createdAt: -1 });
+
     res.json(payments);
   } catch (err) {
     console.error(err);
