@@ -1,14 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const PaymentController = require("../controllers/paymentController");
+const PaymentController = require("../controllers/paymentController"); // correct path
 
-// Create a new payment (POST)
-router.post("/", PaymentController.createPayment);
+// Create payment
+router.post("/", PaymentController.createPayment); // must be a function
 
-// Get all payments (for admin dashboard)
-router.get("/", PaymentController.getAllPayments);
-
-// Get single payment by id (optional)
-router.get("/:id", PaymentController.getPaymentById);
+// Get all payments (optional)
+router.get("/", PaymentController.getPayments); // must be a function
 
 module.exports = router;
